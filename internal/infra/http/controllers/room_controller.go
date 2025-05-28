@@ -23,6 +23,7 @@ func NewRoomController(rs app.RoomService) RoomController {
 
 func (c RoomController) Save() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		room, err := requests.Bind(r, requests.RoomRequest{}, domain.Room{})
 		if err != nil {
 			log.Printf("RoomController.Save(requests.Bind): %s", err)
@@ -77,8 +78,6 @@ func (c RoomController) FindByHouseId() http.HandlerFunc {
 	}
 }
 
-// find by house id
-
 func (c RoomController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		room, err := requests.Bind(r, requests.UpdateRoomRequest{}, domain.Room{})
@@ -105,13 +104,6 @@ func (c RoomController) Update() http.HandlerFunc {
 func (c RoomController) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		room := r.Context().Value(RoomKey).(domain.Room)
-
-		house := r.Context().Value(HouseKey).(domain.House)
-		if room.HouseId != house.Id {
-			log.Printf("RoomController.Delete: room does not belong to the house")
-			Forbidden(w, errors.New("room does not belong to the house"))
-			return
-		}
 
 		err := c.roomService.Delete(room.Id)
 		if err != nil {

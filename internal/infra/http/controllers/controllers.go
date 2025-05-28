@@ -7,18 +7,16 @@ import (
 	"net/http"
 )
 
-/* should not use built-in type string as key for value;
-define your own type to avoid collisions */
-
 type CtxKey struct {
 	Name string
 }
 
 var (
-	UserKey  = CtxKey{Name: "user"}
-	SessKey  = CtxKey{Name: "sess"}
-	HouseKey = CtxKey{Name: "house"}
-	RoomKey  = CtxKey{Name: "room"}
+	UserKey   = CtxKey{Name: "user"}
+	SessKey   = CtxKey{Name: "sess"}
+	HouseKey  = CtxKey{Name: "house"}
+	RoomKey   = CtxKey{Name: "room"}
+	DeviceKey = CtxKey{Name: "device"}
 )
 
 func Ok(w http.ResponseWriter) {

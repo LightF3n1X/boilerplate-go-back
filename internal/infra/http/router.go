@@ -54,6 +54,7 @@ func Router(cont container.Container) http.Handler {
 				UserRouter(apiRouter, cont.UserController)
 				HouseRouter(apiRouter, cont.HouseController, cont.HouseService)
 				RoomRouter(apiRouter, cont.RoomController, cont.HouseService, cont.RoomService)
+				DeviceRouter(apiRouter, cont.DeviceController, cont.DeviceService, cont.RoomService)
 				apiRouter.Handle("/*", NotFoundJSON())
 
 			})
@@ -136,22 +137,34 @@ func RoomRouter(r chi.Router, rc controllers.RoomController, hs app.HouseService
 	hpom := middlewares.PathObject("houseId", controllers.HouseKey, hs)
 	rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
 	r.Route("/houses/{houseId}/rooms", func(apiRouter chi.Router) {
-		apiRouter.With(hpom).Post(
+		apiRouter.With(hpom, rpom).Post(
 			"/",
 			rc.Save(),
 		)
-		apiRouter.With(hpom).Get(
+		apiRouter.With(hpom, rpom).Get(
 			"/{roomId}",
 			rc.FindByHouseId(),
 		)
-		apiRouter.With(rpom).Put(
+		apiRouter.With(rpom, hpom).Put(
 			"/{roomId}",
 			rc.Update(),
 		)
-		apiRouter.With(hpom).Delete(
+		apiRouter.With(hpom, rpom).Delete(
 			"/{roomId}",
 			rc.Delete(),
 		)
+	})
+}
+
+func DeviceRouter(r chi.Router, dc controllers.DeviceController, ds app.DeviceService, rs app.RoomService) {
+	//dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+	//rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
+	r.Route("/houses/{houseId}/rooms/{roomId}/devices", func(apiRouter chi.Router) {
+		apiRouter.Post(
+			"/",
+			dc.Save(),
+		)
+
 	})
 }
 
