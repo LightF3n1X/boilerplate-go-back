@@ -2,16 +2,11 @@ package domain
 
 import "time"
 
-type House struct {
+type Room struct {
 	Id          uint64
-	UserId      uint64
 	Name        string
+	HouseId     uint64
 	Description *string
-	City        string
-	Address     string
-	Lat         float64
-	Lon         float64
-	Rooms       []Room
 	CreatedDate time.Time
 	UpdatedDate time.Time
 	DeletedDate *time.Time

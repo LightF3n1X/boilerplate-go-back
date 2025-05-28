@@ -10,7 +10,9 @@ import (
 
 	"github.com/BohdanBoriak/boilerplate-go-back/config"
 	"github.com/BohdanBoriak/boilerplate-go-back/config/container"
+	"github.com/BohdanBoriak/boilerplate-go-back/internal/app"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/controllers"
+	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/middlewares"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 
@@ -50,7 +52,8 @@ func Router(cont container.Container) http.Handler {
 				apiRouter.Use(cont.AuthMw)
 
 				UserRouter(apiRouter, cont.UserController)
-				HouseRouter(apiRouter, cont.HouseController)
+				HouseRouter(apiRouter, cont.HouseController, cont.HouseService)
+				RoomRouter(apiRouter, cont.RoomController, cont.HouseService, cont.RoomService)
 				apiRouter.Handle("/*", NotFoundJSON())
 
 			})
@@ -103,11 +106,51 @@ func UserRouter(r chi.Router, uc controllers.UserController) {
 	})
 }
 
-func HouseRouter(r chi.Router, hc controllers.HouseController) {
+func HouseRouter(r chi.Router, hc controllers.HouseController, hs app.HouseService) {
+	hpom := middlewares.PathObject("houseId", controllers.HouseKey, hs)
 	r.Route("/houses", func(apiRouter chi.Router) {
 		apiRouter.Post(
 			"/",
 			hc.Save(),
+		)
+		apiRouter.With(hpom).Get(
+			"/{houseId}",
+			hc.Find(),
+		)
+		apiRouter.Get(
+			"/",
+			hc.FindList(),
+		)
+		apiRouter.With(hpom).Put(
+			"/{houseId}",
+			hc.Update(),
+		)
+		apiRouter.With(hpom).Delete(
+			"/{houseId}",
+			hc.Delete(),
+		)
+	})
+}
+
+func RoomRouter(r chi.Router, rc controllers.RoomController, hs app.HouseService, rs app.RoomService) {
+	hpom := middlewares.PathObject("houseId", controllers.HouseKey, hs)
+	rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
+	r.Route("/houses/{houseId}/rooms", func(apiRouter chi.Router) {
+		apiRouter.With(hpom).Post(
+			"/",
+			rc.Save(),
+		)
+		apiRouter.With(hpom).Get(
+			"/{roomId}",
+			rc.FindByHouseId(),
+		)
+		apiRouter.With(rpom).Put(
+			"/{roomId}",
+			rc.Update(),
+		)
+		apiRouter.With(hpom).Delete(
+			"/{roomId}",
+			rc.Delete(),
 		)
 	})
 }

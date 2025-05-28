@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/app"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/requests"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/resources"
-	"log"
-	"net/http"
 )
 
 type UserController struct {
@@ -42,6 +43,7 @@ func (c UserController) Update() http.HandlerFunc {
 		u.SecondName = user.SecondName
 		u.Email = user.Email
 		user, err = c.userService.Update(u)
+
 		if err != nil {
 			log.Printf("UserController: %s", err)
 			InternalServerError(w, err)
