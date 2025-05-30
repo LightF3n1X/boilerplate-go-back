@@ -157,9 +157,9 @@ func RoomRouter(r chi.Router, rc controllers.RoomController, hs app.HouseService
 }
 
 func DeviceRouter(r chi.Router, dc controllers.DeviceController, ds app.DeviceService, rs app.RoomService) {
-	//dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
-	//rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
-	r.Route("/houses/{houseId}/rooms/{roomId}/devices", func(apiRouter chi.Router) {
+	// dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+	// rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
+	r.Route("/devices", func(apiRouter chi.Router) {
 		apiRouter.Post(
 			"/",
 			dc.Save(),

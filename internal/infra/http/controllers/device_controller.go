@@ -15,11 +15,13 @@ import (
 
 type DeviceController struct {
 	deviceService app.DeviceService
+	roomService   app.RoomService
 }
 
-func NewDeviceController(ds app.DeviceService) DeviceController {
+func NewDeviceController(ds app.DeviceService, rs app.RoomService) DeviceController {
 	return DeviceController{
 		deviceService: ds,
+		roomService:   rs,
 	}
 }
 
@@ -32,6 +34,14 @@ func (c DeviceController) Save() http.HandlerFunc {
 			return
 		}
 		device.UUID = uuid.New().String()
+
+		room, err := c.roomService.Find(*device.RoomId)
+		if err != nil {
+			log.Printf("DeviceController.Save(c.roomService.Find): %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
 		room := r.Context().Value(RoomKey).(domain.Room)
 		device.RoomId = &room.Id
 

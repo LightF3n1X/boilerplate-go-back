@@ -116,11 +116,3 @@ func (r roomRepository) mapModelToDomain(rs room) domain.Room {
 		DeletedDate: rs.DeletedDate,
 	}
 }
-
-func (r roomRepository) mapModelToDomainCollection(rooms []room) []domain.Room {
-	hs := make([]domain.Room, len(rooms))
-	for i, h := range rooms {
-		hs[i] = r.mapModelToDomain(h)
-	}
-	return hs
-}
