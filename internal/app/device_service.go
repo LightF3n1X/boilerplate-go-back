@@ -10,6 +10,8 @@ import (
 type DeviceService interface {
 	Save(d domain.Device) (domain.Device, error)
 	Find(id uint64) (interface{}, error)
+	Update(d, newD domain.Device) (domain.Device, error)
+	Delete(id uint64) error
 }
 
 type deviceService struct {
@@ -39,4 +41,38 @@ func (s deviceService) Find(id uint64) (interface{}, error) {
 		return domain.Device{}, err
 	}
 	return device, nil
+}
+
+func (s deviceService) Update(d, newD domain.Device) (domain.Device, error) {
+	if newD.SerialNumber != "" {
+		d.SerialNumber = newD.SerialNumber
+	}
+	if newD.Characteristics != nil {
+		d.Characteristics = newD.Characteristics
+	}
+	if newD.Category != "" {
+		d.Category = newD.Category
+	}
+	if newD.Units != nil {
+		d.Units = newD.Units
+	}
+	if newD.PowerConsumption != nil {
+		d.PowerConsumption = newD.PowerConsumption
+	}
+
+	device, err := s.deviceRepo.Update(d)
+	if err != nil {
+		log.Printf("deviceService.Update(s.deviceRepo.Update): %s", err)
+		return domain.Device{}, err
+	}
+	return device, nil
+}
+
+func (s deviceService) Delete(id uint64) error {
+	err := s.deviceRepo.Delete(id)
+	if err != nil {
+		log.Printf("deviceService.Delete(s.deviceRepo.Delete): %s", err)
+		return err
+	}
+	return nil
 }

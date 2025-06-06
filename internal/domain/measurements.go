@@ -2,12 +2,11 @@ package domain
 
 import "time"
 
-type Room struct {
+type Measurement struct {
 	Id          uint64
-	Name        string
-	HouseId     uint64
-	Description *string
-	Devices     []Device
+	DeviceId    uint64
+	RoomId      *uint64
+	Value       uint64
 	CreatedDate time.Time
 	UpdatedDate time.Time
 	DeletedDate *time.Time

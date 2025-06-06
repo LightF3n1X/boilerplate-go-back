@@ -10,6 +10,7 @@ import (
 type RoomService interface {
 	Save(h domain.Room) (domain.Room, error)
 	Find(id uint64) (interface{}, error)
+	FindById(id uint64) (domain.Room, error)
 	FindByHouseId(hid uint64) ([]domain.Room, error)
 	Update(r, newR domain.Room) (domain.Room, error)
 	Delete(id uint64) error
@@ -36,6 +37,15 @@ func (s roomService) Save(r domain.Room) (domain.Room, error) {
 }
 
 func (s roomService) Find(id uint64) (interface{}, error) {
+	room, err := s.roomRepo.Find(id)
+	if err != nil {
+		log.Printf("roomService.Find(s.roomRepo.Find): %s", err)
+		return domain.Room{}, err
+	}
+	return room, nil
+}
+
+func (s roomService) FindById(id uint64) (domain.Room, error) {
 	room, err := s.roomRepo.Find(id)
 	if err != nil {
 		log.Printf("roomService.Find(s.roomRepo.Find): %s", err)

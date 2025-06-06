@@ -15,6 +15,7 @@ type HouseDto struct {
 	Adress      string     `json:"address"`
 	Lat         float64    `json:"lat"`
 	Lon         float64    `json:"lon"`
+	Rooms       []RoomDto  `json:"rooms,omitempty"`
 	CreatedDate time.Time  `json:"createdDate"`
 	UpdatedDate time.Time  `json:"updatedDate"`
 	DeleteDate  *time.Time `json:"deletedDate,omitempty"`
@@ -29,6 +30,7 @@ func (d HouseDto) DomainToDtoCollection(houses []domain.House) []HouseDto {
 }
 
 func (d HouseDto) DomainToDto(h domain.House) HouseDto {
+	rooms := RoomDto{}.DomainToDtoCollection(h.Rooms)
 	return HouseDto{
 		Id:          h.Id,
 		UserId:      h.UserId,
@@ -38,6 +40,7 @@ func (d HouseDto) DomainToDto(h domain.House) HouseDto {
 		Adress:      h.Address,
 		Lat:         h.Lat,
 		Lon:         h.Lon,
+		Rooms:       rooms,
 		CreatedDate: h.CreatedDate,
 		UpdatedDate: h.UpdatedDate,
 		DeleteDate:  h.DeletedDate,

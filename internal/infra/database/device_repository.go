@@ -14,7 +14,7 @@ type device struct {
 	HouseId          *uint64               `db:"house_id"`
 	RoomId           *uint64               `db:"room_id"`
 	UUID             string                `db:"uuid"`
-	SerialNumber     string                `db:"serial_number"`
+	SerialNumber     string                `db:"serial_numbers"`
 	Characteristics  *string               `db:"characteristics"`
 	Category         domain.DeviceCategory `db:"category"`
 	Units            *string               `db:"units"`
@@ -27,6 +27,8 @@ type device struct {
 type DeviceRepository interface {
 	Save(d domain.Device) (domain.Device, error)
 	Find(id uint64) (domain.Device, error)
+	Update(d domain.Device) (domain.Device, error)
+	Delete(id uint64) error
 }
 
 type deviceRepository struct {
@@ -62,6 +64,25 @@ func (r deviceRepository) Find(id uint64) (domain.Device, error) {
 	}
 	d := r.mapModelToDomain(ds)
 	return d, nil
+}
+
+func (r deviceRepository) Update(d domain.Device) (domain.Device, error) {
+	ds := r.mapDomainToModel(d)
+	ds.UpdatedDate = time.Now()
+
+	err := r.coll.
+		Find(db.Cond{
+			"id":           ds.Id,
+			"deleted_date": nil}).Update(&ds)
+	if err != nil {
+		return domain.Device{}, err
+	}
+	d = r.mapModelToDomain(ds)
+	return d, nil
+}
+
+func (r deviceRepository) Delete(id uint64) error {
+	return r.coll.Find(db.Cond{"id": id, "deleted_date": nil}).Update(map[string]interface{}{"deleted_date": time.Now()})
 }
 
 func (r deviceRepository) mapDomainToModel(d domain.Device) device {

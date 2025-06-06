@@ -30,14 +30,16 @@ type Services struct {
 	app.HouseService
 	app.RoomService
 	app.DeviceService
+	app.MeasurementsService
 }
 
 type Controllers struct {
-	AuthController   controllers.AuthController
-	UserController   controllers.UserController
-	HouseController  controllers.HouseController
-	RoomController   controllers.RoomController
-	DeviceController controllers.DeviceController
+	AuthController         controllers.AuthController
+	UserController         controllers.UserController
+	HouseController        controllers.HouseController
+	RoomController         controllers.RoomController
+	DeviceController       controllers.DeviceController
+	MeasurementsController controllers.MeasurementsController
 }
 
 func New(conf config.Configuration) Container {
@@ -49,18 +51,21 @@ func New(conf config.Configuration) Container {
 	houseRepository := database.NewHouseRepository(sess)
 	roomRepository := database.NewRoomRepository(sess)
 	deviceRepository := database.NewDeviceRepository(sess)
+	measurementsRepository := database.NewMeasurementsRepository(sess)
 
 	userService := app.NewUserService(userRepository)
 	authService := app.NewAuthService(sessionRepository, userRepository, tknAuth, conf.JwtTTL)
 	houseService := app.NewHouseService(houseRepository, roomRepository)
 	roomService := app.NewRoomService(roomRepository)
 	deviceService := app.NewDeviceService(deviceRepository)
+	measurementsService := app.NewMeasurementsService(measurementsRepository)
 
 	authController := controllers.NewAuthController(authService, userService)
 	userController := controllers.NewUserController(userService, authService)
 	houseController := controllers.NewHouseController(houseService)
 	roomController := controllers.NewRoomController(roomService)
 	deviceController := controllers.NewDeviceController(deviceService, roomService)
+	measurementsController := controllers.NewMeasurementsController(measurementsService, deviceService, roomService)
 
 	authMiddleware := middlewares.AuthMiddleware(tknAuth, authService, userService)
 
@@ -74,6 +79,7 @@ func New(conf config.Configuration) Container {
 			houseService,
 			roomService,
 			deviceService,
+			measurementsService,
 		},
 		Controllers: Controllers{
 			authController,
@@ -81,6 +87,7 @@ func New(conf config.Configuration) Container {
 			houseController,
 			roomController,
 			deviceController,
+			measurementsController,
 		},
 	}
 }
