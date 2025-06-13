@@ -20,6 +20,7 @@ type measurement struct {
 }
 
 type MeasurementsRepository interface {
+	Save(m domain.Measurement) (domain.Measurement, error)
 }
 
 type measurementsRepository struct {
@@ -32,6 +33,19 @@ func NewMeasurementsRepository(sess db.Session) MeasurementsRepository {
 		coll: sess.Collection(MeasurementsTableName),
 		sess: sess,
 	}
+}
+
+func (r measurementsRepository) Save(m domain.Measurement) (domain.Measurement, error) {
+	ms := r.mapDomainToModel(m)
+	ms.CreatedDate = time.Now()
+	ms.UpdatedDate = time.Now()
+
+	err := r.coll.InsertReturning(&ms)
+	if err != nil {
+		return domain.Measurement{}, err
+	}
+	m = r.mapModelToDomain(ms)
+	return m, nil
 }
 
 func (r measurementsRepository) mapDomainToModel(m domain.Measurement) measurement {
