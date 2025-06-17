@@ -60,7 +60,6 @@ func (s roomService) FindByHouseId(hid uint64) ([]domain.Room, error) {
 		log.Printf("roomService.FindByHouseId(s.roomRepo.FindByHouseId): %s", err)
 		return nil, err
 	}
-
 	return rooms, nil
 }
 

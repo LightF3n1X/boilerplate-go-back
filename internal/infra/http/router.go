@@ -159,7 +159,6 @@ func RoomRouter(r chi.Router, rc controllers.RoomController, hs app.HouseService
 
 func DeviceRouter(r chi.Router, dc controllers.DeviceController, ds app.DeviceService, rs app.RoomService) {
 	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
-	// rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
 	r.Route("/devices", func(apiRouter chi.Router) {
 		apiRouter.Post(
 			"/",
@@ -177,7 +176,13 @@ func DeviceRouter(r chi.Router, dc controllers.DeviceController, ds app.DeviceSe
 }
 
 func MeasurementsRouter(r chi.Router, mc controllers.MeasurementsController, ms app.MeasurementsService, rs app.RoomService, ds app.DeviceService) {
-
+	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+	r.Route("/devices/{deviceId}/measurements", func(apiRouter chi.Router) {
+		apiRouter.With(dpom).Post(
+			"/",
+			mc.Save(),
+		)
+	})
 }
 
 func NotFoundJSON() http.HandlerFunc {

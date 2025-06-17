@@ -10,6 +10,7 @@ import (
 type DeviceService interface {
 	Save(d domain.Device) (domain.Device, error)
 	Find(id uint64) (interface{}, error)
+	FindById(id uint64) (domain.Device, error)
 	Update(d, newD domain.Device) (domain.Device, error)
 	Delete(id uint64) error
 }
@@ -75,4 +76,13 @@ func (s deviceService) Delete(id uint64) error {
 		return err
 	}
 	return nil
+}
+
+func (s deviceService) FindById(id uint64) (domain.Device, error) {
+	device, err := s.deviceRepo.Find(id)
+	if err != nil {
+		log.Printf("deviceService.FindById(s.deviceRepo.Find): %s", err)
+		return domain.Device{}, err
+	}
+	return device, nil
 }

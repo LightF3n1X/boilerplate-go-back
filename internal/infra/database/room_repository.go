@@ -63,6 +63,7 @@ func (r roomRepository) Find(id uint64) (domain.Room, error) {
 	rss := r.mapModelToDomain(rs)
 	return rss, nil
 }
+
 func (r roomRepository) FindByHouseId(hid uint64) ([]domain.Room, error) {
 	rs := []room{}
 	err := r.coll.Find(db.Cond{"house_id": hid, "deleted_date": nil}).All(&rs)

@@ -57,7 +57,7 @@ func (c MeasurementsController) Save() http.HandlerFunc {
 		}
 
 		measurement.RoomId = &room.Id
-		measurement.DeviceId = &device.Id
+		measurement.DeviceId = device.Id
 
 		measurement, err = c.measurementsService.Save(measurement)
 		if err != nil {
